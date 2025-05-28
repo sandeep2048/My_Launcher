@@ -1,6 +1,7 @@
 package com.xequal2.launcher.ui
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -92,54 +93,44 @@ fun LauncherMainScreen(viewModel: LauncherViewModel) {
                         )
                     }
 
-
-                    // App grid at bottom
-                    Column(
+                    // App grid aligned to bottom
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(bottom = 24.dp),
-                        verticalArrangement = Arrangement.Bottom,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .padding(bottom = 100.dp),
+                        contentAlignment = Alignment.BottomCenter
                     ) {
-                        if (homeApps.isEmpty()) {
-                            Text(
-                                text = "No apps selected",
-                                color = Color.Gray
-                            )
-                        } else {
-                            LazyVerticalGrid(
-                                columns = GridCells.Fixed(4),
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                modifier = Modifier
-                                    .wrapContentHeight()
-                                    .padding(horizontal = 16.dp)
-                            ) {
-                                items(homeApps) { app ->
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = Modifier
-                                            .clickable {
-                                                val launchIntent =
-                                                    context.packageManager.getLaunchIntentForPackage(
-                                                        app.packageName
-                                                    )
-                                                launchIntent?.let { context.startActivity(it) }
-                                            }
-                                    ) {
-                                        Image(
-                                            painter = drawableToPainter(drawable = app.icon),
-                                            contentDescription = app.appName,
-                                            modifier = Modifier.size(56.dp)
-                                        )
-                                        Spacer(modifier = Modifier.height(4.dp))
-                                        Text(
-                                            text = app.appName,
-                                            color = Color.White,
-                                            fontSize = 12.sp,
-                                            maxLines = 1
-                                        )
-                                    }
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(4),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .fillMaxWidth()
+                        ) {
+                            items(homeApps) { app ->
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .clickable {
+                                            val launchIntent =
+                                                context.packageManager.getLaunchIntentForPackage(app.packageName)
+                                            launchIntent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            launchIntent?.let { context.startActivity(it) }
+                                        }
+                                ) {
+                                    Image(
+                                        painter = drawableToPainter(drawable = app.icon),
+                                        contentDescription = app.appName,
+                                        modifier = Modifier.size(56.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = app.appName,
+                                        color = Color.White,
+                                        fontSize = 12.sp,
+                                        maxLines = 1
+                                    )
                                 }
                             }
                         }
