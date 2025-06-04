@@ -34,8 +34,15 @@ class LauncherViewModel(private val context: Context) : ViewModel() {
 
     fun toggleSelection(pkg: String, isChecked: Boolean) {
         AppPrefManager.toggleApp(context, pkg, isChecked)
-        if (isChecked) selectedPackages.add(pkg)
-        else selectedPackages.remove(pkg)
+        if (isChecked) {
+            if (!selectedPackages.contains(pkg)) {
+                selectedPackages.add(pkg)
+            }
+        } else {
+            while (selectedPackages.remove(pkg)) {
+                // remove all duplicates if any exist
+            }
+        }
     }
 
     fun filteredApps(): List<AppItem> {
